@@ -90,6 +90,7 @@ object Ingest {
         rdd.persist(cacheLevel)
         sink(rdd, zoom)
         val pyramidLevel @ (nextZoom, nextRdd) = Pyramid.up(rdd, layoutScheme, zoom, partitioner)
+        rdd.unpersist(true)
         pyramidLevel :: buildPyramid(nextZoom, nextRdd)
       } else {
         sink(rdd, zoom)
@@ -97,7 +98,7 @@ object Ingest {
       }
     }
 
-    if (pyramid) buildPyramid(zoom, tileLayerRdd).foreach { case (z, rdd) => rdd.unpersist(true) }
+    if (pyramid) buildPyramid(zoom, tileLayerRdd)
     else sink(tileLayerRdd, zoom)
   }
 }
