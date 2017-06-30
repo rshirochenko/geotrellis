@@ -142,3 +142,19 @@ case class SocketWriteStrategy(
     }
   }
 }
+
+case class BatchWriteStrategy(
+  config: BatchWriterConfig = new BatchWriterConfig().setMaxMemory(128*1024*1024).setMaxWriteThreads(1),
+  threads:Int = 1
+) extends AccumuloWriteStrategy {
+  override def write(kvPairs: RDD[(Key, Value)], instance: AccumuloInstance, table: String): Unit = {
+    //val serializeWrapper = KryoSerializer(config) // BatchWriterConfig is not java serializable
+    val writer = instance.connector.createBatchWriter(table,config)
+    kvPairs.foreach { case(key, value) ⇒
+        val mutation = new Mutation(key.getRow)
+        mutation.put(key.getColumnFamily, key.getColumnQualifier, System.currentTimeMillis(), value)
+        writer.addMutation(mutation)
+    }
+    writer.close()
+  }
+}
