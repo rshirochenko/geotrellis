@@ -1,4 +1,4 @@
-
+import Dependencies._
 
 name := "geotrellis-accumulo"
 libraryDependencies ++= Seq(
@@ -23,16 +23,14 @@ initialCommands in console :=
   import geotrellis.spark.io.accumulo._
   """
 
-lazy val buildSettings = assemblySettings ++ Seq(
-  test in assembly := {},
-  assemblyOption in assembly ~= { _.copy(includeScala = true) },
-  assemblyMergeStrategy in assembly := {
-    case "reference.conf"        ⇒ MergeStrategy.concat
-    case "application.conf"      ⇒ MergeStrategy.concat
-    case "META-INF/MANIFEST.MF"  ⇒ MergeStrategy.discard
-    case "META-INF\\MANIFEST.MF" ⇒ MergeStrategy.discard
-    case "META-INF/ECLIPSEF.RSA" ⇒ MergeStrategy.discard
-    case "META-INF/ECLIPSEF.SF"  ⇒ MergeStrategy.discard
-    case _                       ⇒ MergeStrategy.first
-  }
-)
+test in assembly := {}
+
+assemblyMergeStrategy in assembly := {
+  case "reference.conf" => MergeStrategy.concat
+  case "application.conf" => MergeStrategy.concat
+  case "META-INF/MANIFEST.MF" => MergeStrategy.discard
+  case "META-INF\\MANIFEST.MF" => MergeStrategy.discard
+  case "META-INF/ECLIPSEF.RSA" => MergeStrategy.discard
+  case "META-INF/ECLIPSEF.SF" => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
