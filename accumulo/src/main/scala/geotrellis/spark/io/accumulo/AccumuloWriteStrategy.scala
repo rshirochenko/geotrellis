@@ -148,9 +148,9 @@ case class BatchWriteStrategy(
   threads:Int = 1
 ) extends AccumuloWriteStrategy {
   override def write(kvPairs: RDD[(Key, Value)], instance: AccumuloInstance, table: String): Unit = {
-    //val serializeWrapper = KryoSerializer(config) // BatchWriterConfig is not java serializable
-    println("BatchWriteStrategy is activated!")
-    val writer = instance.connector.createBatchWriter(table,config)
+    val serializeWrapper = KryoWrapper(config) // BatchWriterConfig is not java serializable
+    val serConfig = serializeWrapper.value
+    val writer = instance.connector.createBatchWriter(table,serConfig)
     kvPairs.foreach { case(key, value) ⇒
         val mutation = new Mutation(key.getRow)
         mutation.put(key.getColumnFamily, key.getColumnQualifier, System.currentTimeMillis(), value)
