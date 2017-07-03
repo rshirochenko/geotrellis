@@ -144,7 +144,7 @@ case class SocketWriteStrategy(
 }
 
 case class BatchWriteStrategy(
-  config: BatchWriterConfig = new BatchWriterConfig().setMaxMemory(128*1024*1024).setMaxWriteThreads(1),
+  config: BatchWriterConfig = new BatchWriterConfig().setMaxMemory(128*1024*1024).setMaxWriteThreads(8),
   threads:Int = 1
 ) extends AccumuloWriteStrategy {
   override def write(kvPairs: RDD[(Key, Value)], instance: AccumuloInstance, table: String): Unit = {
