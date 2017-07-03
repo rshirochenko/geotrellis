@@ -148,6 +148,7 @@ case class BatchWriteStrategy(
   threads:Int = 1
 ) extends AccumuloWriteStrategy {
   override def write(kvPairs: RDD[(Key, Value)], instance: AccumuloInstance, table: String): Unit = {
+    println("BatchWriteStrategy")
     val serializeWrapper = KryoWrapper(config) // BatchWriterConfig is not java serializable
     val serConfig = serializeWrapper.value
     val writer = instance.connector.createBatchWriter(table,serConfig)
