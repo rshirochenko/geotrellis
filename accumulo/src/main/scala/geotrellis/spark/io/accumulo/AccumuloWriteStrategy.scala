@@ -151,7 +151,7 @@ case class BatchWriteStrategy(
     val serializeWrapper = KryoWrapper(config) // BatchWriterConfig is not java serializable
     val serConfig = serializeWrapper.value
     val writer = instance.connector.createBatchWriter(table,serConfig)
-    kvPairs.foreach { case(key, value) ⇒
+    kvPairs.collect.map { case(key, value) ⇒
         val mutation = new Mutation(key.getRow)
         mutation.put(key.getColumnFamily, key.getColumnQualifier, System.currentTimeMillis(), value)
         writer.addMutation(mutation)
