@@ -19,17 +19,13 @@ package geotrellis.spark.io.accumulo
 import geotrellis.spark.util._
 import geotrellis.spark.io._
 import geotrellis.spark.io.hadoop._
-
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.fs.Path
 import org.apache.spark.rdd.RDD
 import org.apache.accumulo.core.data.{Key, Mutation, Value}
 import org.apache.accumulo.core.client.mapreduce.AccumuloFileOutputFormat
-import org.apache.accumulo.core.client.BatchWriterConfig
+import org.apache.accumulo.core.client.{BatchWriterConfig, Durability}
 import com.typesafe.config.ConfigFactory
-import scalaz.concurrent.{Strategy, Task}
-import scalaz.stream._
-
 import java.util.UUID
 import java.util.concurrent.Executors
 
@@ -144,14 +140,14 @@ case class SocketWriteStrategy(
 }
 
 case class BatchWriteStrategy(
-  config: BatchWriterConfig = new BatchWriterConfig().setMaxMemory(128*1024*1024).setMaxWriteThreads(8),
+  config: BatchWriterConfig = new BatchWriterConfig().setMaxWriteThreads(1).setDurability(Durability.SYNC),
   threads:Int = 1
 ) extends AccumuloWriteStrategy {
   override def write(kvPairs: RDD[(Key, Value)], instance: AccumuloInstance, table: String): Unit = {
     println("BatchWriteStrategy")
-    val serializeWrapper = KryoWrapper(config) // BatchWriterConfig is not java serializable
-    val serConfig = serializeWrapper.value
-    val writer = instance.connector.createBatchWriter(table,serConfig)
+    //val serializeWrapper = KryoWrapper(config) // BatchWriterConfig is not java serializable
+    //val serConfig = serializeWrapper.value
+    val writer = instance.connector.createBatchWriter(table,config)
     kvPairs.collect.map { case(key, value) ⇒
         val mutation = new Mutation(key.getRow)
         mutation.put(key.getColumnFamily, key.getColumnQualifier, System.currentTimeMillis(), value)
