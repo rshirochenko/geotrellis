@@ -26,8 +26,14 @@ import org.apache.accumulo.core.data.{Key, Mutation, Value}
 import org.apache.accumulo.core.client.mapreduce.AccumuloFileOutputFormat
 import org.apache.accumulo.core.client.{BatchWriterConfig, Durability}
 import com.typesafe.config.ConfigFactory
+
+import scalaz.concurrent.{Strategy, Task}
+import scalaz.stream._
+
 import java.util.UUID
 import java.util.concurrent.Executors
+
+
 
 object AccumuloWriteStrategy {
   val threads = ConfigFactory.load().getThreads("geotrellis.accumulo.threads.rdd.write")
