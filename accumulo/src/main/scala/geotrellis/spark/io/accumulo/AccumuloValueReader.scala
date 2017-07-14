@@ -32,6 +32,9 @@ import spray.json.DefaultJsonProtocol._
 import scala.collection.JavaConversions._
 import scala.reflect.ClassTag
 
+import org.apache.accumulo.core.trace.DistributedTrace
+import org.apache.accumulo.core.trace.Trace
+
 class AccumuloValueReader(
   instance: AccumuloInstance,
   val attributeStore: AttributeStore
@@ -46,6 +49,10 @@ class AccumuloValueReader(
     val codec = KeyValueRecordCodec[K, V]
 
     def read(key: K): V = {
+
+      DistributedTrace.enable()
+      val scanTrace = Trace.on("checkAccumuloScannerRead")
+
       val scanner = instance.connector.createScanner(header.tileTable, new Authorizations())
       scanner.setRange(new ARange(rowId(keyIndex.toIndex(key))))
       scanner.fetchColumnFamily(columnFamily(layerId))
@@ -64,6 +71,9 @@ class AccumuloValueReader(
       } else if (tiles.size > 1) {
         throw new LayerIOError(s"Multiple values found for $key for layer $layerId")
       } else {
+        val traceId:Long = Trace.currentTrace().traceId()
+        println(s"------trace id: $traceId")
+        Trace.off()
         tiles.head._2
       }
     }
