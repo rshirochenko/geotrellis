@@ -71,7 +71,7 @@ class AccumuloValueReader(
       } else if (tiles.size > 1) {
         throw new LayerIOError(s"Multiple values found for $key for layer $layerId")
       } else {
-        val traceId:Long = Trace.currentTrace().traceId()
+        val traceId:Long = Trace.currentTraceId()
         println(s"------trace id: $traceId")
         Trace.off()
         tiles.head._2
