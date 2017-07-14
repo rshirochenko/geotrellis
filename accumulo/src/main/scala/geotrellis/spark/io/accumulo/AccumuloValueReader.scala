@@ -47,6 +47,7 @@ class AccumuloValueReader(
 
     def read(key: K): V = {
       val startTime = System.currentTimeMillis()
+      println("I am here")
       val scanner = instance.connector.createScanner(header.tileTable, new Authorizations())
       scanner.setRange(new ARange(rowId(keyIndex.toIndex(key))))
       scanner.fetchColumnFamily(columnFamily(layerId))
