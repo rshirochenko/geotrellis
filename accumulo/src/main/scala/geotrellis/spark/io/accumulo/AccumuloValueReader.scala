@@ -50,8 +50,8 @@ class AccumuloValueReader(
 
     def read(key: K): V = {
 
-      DistributedTrace.enable()
-      val scanTrace = Trace.on("checkAccumuloScannerRead")
+      //DistributedTrace.enable()
+      //val scanTrace = Trace.on("checkAccumuloScannerRead")
 
       val startTime = System.currentTimeMillis()
       val scanner = instance.connector.createScanner(header.tileTable, new Authorizations())
@@ -72,9 +72,9 @@ class AccumuloValueReader(
       } else if (tiles.size > 1) {
         throw new LayerIOError(s"Multiple values found for $key for layer $layerId")
       } else {
-        val traceId:Long = Trace.currentTraceId()
-        println(s"------trace id: $traceId")
-        Trace.off()
+        //val traceId:Long = Trace.currentTraceId()
+        //println(s"------trace id: $traceId")
+        //Trace.off()
         val executionTime = System.currentTimeMillis() - startTime
         println(s"execution time $executionTime")
 
