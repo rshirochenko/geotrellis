@@ -53,6 +53,7 @@ class AccumuloValueReader(
       DistributedTrace.enable()
       val scanTrace = Trace.on("checkAccumuloScannerRead")
 
+      val startTime = System.currentTimeMillis()
       val scanner = instance.connector.createScanner(header.tileTable, new Authorizations())
       scanner.setRange(new ARange(rowId(keyIndex.toIndex(key))))
       scanner.fetchColumnFamily(columnFamily(layerId))
@@ -74,6 +75,9 @@ class AccumuloValueReader(
         val traceId:Long = Trace.currentTraceId()
         println(s"------trace id: $traceId")
         Trace.off()
+        val executionTime = System.currentTimeMillis() - startTime
+        println(s"execution time $executionTime")
+
         tiles.head._2
       }
     }
