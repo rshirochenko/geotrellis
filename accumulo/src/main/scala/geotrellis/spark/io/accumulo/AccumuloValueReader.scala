@@ -46,8 +46,6 @@ class AccumuloValueReader(
     val codec = KeyValueRecordCodec[K, V]
 
     def read(key: K): V = {
-      val startTime = System.currentTimeMillis()
-      println("I am here")
       val scanner = instance.connector.createScanner(header.tileTable, new Authorizations())
       scanner.setRange(new ARange(rowId(keyIndex.toIndex(key))))
       scanner.fetchColumnFamily(columnFamily(layerId))
@@ -66,8 +64,6 @@ class AccumuloValueReader(
       } else if (tiles.size > 1) {
         throw new LayerIOError(s"Multiple values found for $key for layer $layerId")
       } else {
-        val executionTime = System.currentTimeMillis()- startTime
-        println(s"accumulo scanner time $executionTime")
         tiles.head._2
       }
     }
